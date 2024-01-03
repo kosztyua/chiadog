@@ -1,16 +1,11 @@
 FROM python:3.10-slim
-
-LABEL org.opencontainers.image.source="https://github.com/martomi/chiadog"
-
-ENV CHIADOG_CONFIG_DIR=/root/.chiadog/config.yaml
-ENV TZ=UTC
-
+LABEL org.opencontainers.image.source="https://github.com/kosztyua/chiadog"
 WORKDIR /chiadog
-COPY requirements.txt /chiadog
-RUN python3 -m venv venv \
+COPY . /chiadog
+RUN apt update && apt upgrade && \
+adduser -D chiadog && 
+python3 -m venv venv && \
 && . ./venv/bin/activate \
 && pip3 install -r requirements.txt
-
-COPY . /chiadog
-
+USER chiadog
 ENTRYPOINT ["/chiadog/entrypoint.sh"]
