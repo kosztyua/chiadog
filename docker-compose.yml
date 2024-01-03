@@ -1,0 +1,14 @@
+version: "3"
+services:
+  chiadog:
+    container_name: chiadog
+    image: ghcr.io/kosztyua/chiadog:latest
+    environment:
+      - TZ=Europe/Budapest
+      - CHIADOG_CONFIG_DIR=/chiadog/config/config.yaml
+    volumes:
+      - config:/chiadog/config
+      - /home/chia/.chia/mainnet/log:/chiadog/log:ro
+    restart: unless-stopped
+volumes:
+  config:
