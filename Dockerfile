@@ -1,16 +1,17 @@
-FROM python:3.10-slim
+FROM python:3-slim
 
-LABEL org.opencontainers.image.source="https://github.com/martomi/chiadog"
-
-ENV CHIADOG_CONFIG_DIR=/root/.chiadog/config.yaml
-ENV TZ=UTC
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 WORKDIR /chiadog
-COPY requirements.txt /chiadog
-RUN python3 -m venv venv \
-&& . ./venv/bin/activate \
-&& pip3 install -r requirements.txt
-
 COPY . /chiadog
+RUN apt update \ 
+&& apt upgrade \
+&& groupadd -g 10001 chiadog \
+&& useradd -m -u 10000 -g chiadog chiadog \
+&& pip3 install -r requirements.txt \
+&& chown -R chiadog:chiadog /chiadog
+USER chiadog
 
-ENTRYPOINT ["/chiadog/entrypoint.sh"]
+CMD ["sh", "-c", "python3 /chiadog/main.py --config $CHIADOG_CONFIG_DIR"]
